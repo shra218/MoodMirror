@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mood Mirror</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-image: url("{% static 'images/meditate.png' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .overlay {
+            min-height: 100vh;
+            background: rgba(226, 171, 198, 0.7);
+            padding: 40px;
+        }
+
+        nav {
+    width: 100%;
+    padding: 20px 60px;
+    display: flex;
+    justify-content: flex-start;
+    gap: 40px;
+    font-weight: 600;
+}
+
+nav a {
+    text-decoration: none;
+    color: #444;
+    font-size: 15px;
+    padding-bottom: 5px;
+}
+
+nav a:hover {
+    color: #b04878;
+    border-bottom: 2px solid #b04878;
+}
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <nav>
+            <a href="/">Home</a>
+            <a href="/reflection/">Reflection</a>
+            <a href="/analytics/">Analytics</a>
+        </nav>
+        <nav>
+            <a href="/signup/">Sign Up</a>
+        </nav>
+
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

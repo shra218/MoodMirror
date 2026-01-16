@@ -1,0 +1,548 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Analytics - Mood Mirror</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fef5f9 0%, #f5f1ff 50%, #fffaf7 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            padding: 60px 40px;
+        }
+
+        /* Animated pastel blobs */
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        body::before {
+            width: 500px;
+            height: 500px;
+            background: #ffc0cb;
+            top: -150px;
+            left: -150px;
+            animation: floatBlob1 15s ease-in-out infinite;
+        }
+
+        body::after {
+            width: 600px;
+            height: 600px;
+            background: #e6ccff;
+            bottom: -200px;
+            right: -200px;
+            animation: floatBlob2 18s ease-in-out infinite;
+        }
+
+        @keyframes floatBlob1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        @keyframes floatBlob2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, 30px); }
+        }
+
+        /* Main Container */
+        .analytics-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: slideInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideInScale {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Header */
+        .analytics-header {
+            text-align: center;
+            margin-bottom: 80px;
+            animation: fadeInDown 0.8s ease 0.1s both;
+        }
+
+        .analytics-header h1 {
+            font-size: 56px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 50%, #7c3aab 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.8px;
+            margin-bottom: 15px;
+        }
+
+        .analytics-header p {
+            font-size: 18px;
+            color: #999;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        /* Charts Grid - Desktop First */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 50px;
+            margin-bottom: 80px;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .chart-container:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .chart-container:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        /* Canvas wrapper with glassmorphism */
+        .chart-wrapper {
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(25px);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            border-radius: 25px;
+            padding: 35px 30px;
+            box-shadow: 0 15px 40px rgba(214, 51, 132, 0.12);
+            width: 100%;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .chart-wrapper:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 60px rgba(214, 51, 132, 0.18);
+        }
+
+        .chart-wrapper canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* Chart Caption */
+        .chart-caption {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 15px;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            line-height: 1.6;
+            max-width: 280px;
+        }
+
+        .chart-caption strong {
+            color: #d63384;
+            display: block;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        /* Text Insights - Full Width */
+        .insights-section {
+            margin-top: 100px;
+            animation: fadeInUp 0.8s ease 0.5s both;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .insight-box {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(25px);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(214, 51, 132, 0.1);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .insight-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 55px rgba(214, 51, 132, 0.15);
+        }
+
+        .insight-box h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #d63384;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .insight-box p {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.8;
+            font-weight: 400;
+        }
+
+        /* Navigation */
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 80px;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 16px;
+            color: #a78bfa;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 14px 32px;
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            letter-spacing: 0.3px;
+        }
+
+        .back-btn:hover {
+            color: #d63384;
+            background: rgba(214, 51, 132, 0.1);
+            transform: translateX(-3px);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tablet Responsive */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 40px;
+            }
+
+            .analytics-header h1 {
+                font-size: 48px;
+            }
+
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Tablet Portrait */
+        @media (max-width: 900px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .analytics-header h1 {
+                font-size: 40px;
+            }
+
+            body {
+                padding: 40px 20px;
+            }
+
+            .chart-wrapper {
+                aspect-ratio: auto;
+                min-height: 400px;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            body {
+                padding: 30px 15px;
+            }
+
+            .analytics-header h1 {
+                font-size: 32px;
+            }
+
+            .charts-grid {
+                gap: 30px;
+            }
+
+            .chart-wrapper {
+                padding: 25px 20px;
+                min-height: 320px;
+            }
+
+            .insight-box {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="analytics-wrapper">
+        <!-- Header -->
+        <div class="analytics-header">
+            <h1>Wellness Analytics 🌿</h1>
+            <p>Your emotional wellness visualized</p>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <!-- Mood Distribution Chart -->
+            <div class="chart-container">
+                <div class="chart-wrapper">
+                    <canvas id="moodDistributionChart"></canvas>
+                </div>
+                <div class="chart-caption">
+                    <strong>Mood Distribution</strong>
+                    Breakdown of your moods this month
+                </div>
+            </div>
+
+            <!-- Mood Streak & Stats -->
+            <div class="chart-container">
+                <div class="chart-wrapper">
+                    <canvas id="wellnessStatsChart"></canvas>
+                </div>
+                <div class="chart-caption">
+                    <strong>Wellness Stats</strong>
+                    Your tracking consistency and balance
+                </div>
+            </div>
+
+            <!-- Emotional Balance Chart -->
+            <div class="chart-container">
+                <div class="chart-wrapper">
+                    <canvas id="emotionalBalanceChart"></canvas>
+                </div>
+                <div class="chart-caption">
+                    <strong>Emotional Balance</strong>
+                    Positive, neutral, and reflective days
+                </div>
+            </div>
+        </div>
+
+        <!-- Text Insights -->
+        <div class="insights-section">
+            <div class="insights-grid">
+                <!-- AI Insight -->
+                <div class="insight-box">
+                    <h3>🧠 Emotional Insight</h3>
+                    <p>{{ insight }}</p>
+                </div>
+
+                <!-- Gentle Suggestions -->
+                <div class="insight-box">
+                    <h3>💜 Gentle Suggestions</h3>
+                    <p>{{ suggestions }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="back-btn">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js configuration
+        Chart.defaults.font.family = "'Poppins', sans-serif";
+        Chart.defaults.color = '#999';
+
+        // Pastel colors
+        const colors = {
+            pink: '#d63384',
+            purple: '#9b4fa8',
+            lavender: '#a78bfa',
+            lightPink: 'rgba(214, 51, 132, 0.15)',
+            lightPurple: 'rgba(155, 79, 168, 0.15)',
+        };
+
+        // Data from Django context
+        const moodData = {{ mood_percentages|safe }};
+        const totalMoods = {{ total_moods }};
+        const moodStreak = {{ mood_streak }};
+        const balanceEmoji = "{{ balance_emoji }}";
+        const balanceText = "{{ balance_indicator }}";
+        const positiveCount = {{ positive_count }};
+        const neutralCount = {{ neutral_count }};
+        const heavyCount = {{ heavy_count }};
+
+        // 1. Mood Distribution Pie Chart
+        const moodDistributionCtx = document.getElementById('moodDistributionChart').getContext('2d');
+        const moodChartColors = [
+            '#FFB6C1', // Light Pink
+            '#DDA0DD', // Plum
+            '#EE82EE', // Violet
+            '#BA55D3', // Medium Orchid
+            '#DA70D6', // Orchid
+            '#FF69B4'  // Hot Pink
+        ];
+
+        new Chart(moodDistributionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(moodData).map(m => m.charAt(0).toUpperCase() + m.slice(1)),
+                datasets: [{
+                    data: Object.values(moodData),
+                    backgroundColor: moodChartColors,
+                    borderColor: 'rgba(255, 255, 255, 0.8)',
+                    borderWidth: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { size: 12, weight: 600 },
+                            padding: 15,
+                            usePointStyle: true,
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Wellness Stats Bar Chart
+        const wellnessStatsCtx = document.getElementById('wellnessStatsChart').getContext('2d');
+        new Chart(wellnessStatsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Streak', 'Total Moods'],
+                datasets: [{
+                    label: 'Count',
+                    data: [moodStreak, totalMoods],
+                    backgroundColor: [
+                        'rgba(214, 51, 132, 0.8)',
+                        'rgba(155, 79, 168, 0.8)'
+                    ],
+                    borderColor: [colors.pink, colors.purple],
+                    borderWidth: 2,
+                    borderRadius: 10,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: Math.max(moodStreak, totalMoods) + 5,
+                        ticks: { font: { size: 12 } }
+                    },
+                    y: {
+                        ticks: { font: { size: 12, weight: 600 } }
+                    }
+                }
+            }
+        });
+
+        // 3. Emotional Balance Radar Chart
+        const emotionalBalanceCtx = document.getElementById('emotionalBalanceChart').getContext('2d');
+        new Chart(emotionalBalanceCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Positive', 'Neutral', 'Reflective'],
+                datasets: [{
+                    label: 'Days',
+                    data: [positiveCount, neutralCount, heavyCount],
+                    borderColor: colors.pink,
+                    backgroundColor: 'rgba(214, 51, 132, 0.15)',
+                    borderWidth: 2,
+                    pointBackgroundColor: colors.pink,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        ticks: { font: { size: 11 } }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

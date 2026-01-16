@@ -1,0 +1,278 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Wisdom - Mood Mirror</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fef5f9 0%, #f5f1ff 50%, #fffaf7 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        /* Animated pastel blobs */
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        body::before {
+            width: 500px;
+            height: 500px;
+            background: #ffc0cb;
+            top: -150px;
+            left: -150px;
+            animation: floatBlob1 15s ease-in-out infinite;
+        }
+
+        body::after {
+            width: 600px;
+            height: 600px;
+            background: #e6ccff;
+            bottom: -200px;
+            right: -200px;
+            animation: floatBlob2 18s ease-in-out infinite;
+        }
+
+        @keyframes floatBlob1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        @keyframes floatBlob2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, 30px); }
+        }
+
+        /* Wisdom Card - Desktop First */
+        .wisdom-card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 800px;
+            min-height: 500px;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(25px);
+            border: 1.5px solid rgba(255, 255, 255, 0.7);
+            border-radius: 40px;
+            padding: 80px 70px;
+            box-shadow: 0 25px 70px rgba(214, 51, 132, 0.15);
+            animation: slideInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        @keyframes slideInScale {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Header */
+        .wisdom-header {
+            margin-bottom: 50px;
+        }
+
+        .wisdom-header h1 {
+            font-size: 52px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 50%, #7c3aab 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.8px;
+            line-height: 1.2;
+        }
+
+        /* Wisdom Quote Text */
+        .wisdom-quote {
+            font-size: 32px;
+            font-weight: 600;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 35px;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        /* Subtext */
+        .wisdom-subtext {
+            font-size: 18px;
+            color: #999;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease 0.35s both;
+        }
+
+        /* Buttons Container */
+        .wisdom-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            width: 100%;
+            animation: fadeInUp 0.8s ease 0.5s both;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 16px;
+            color: #a78bfa;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 16px 32px;
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            letter-spacing: 0.3px;
+            width: 100%;
+        }
+
+        .back-btn:hover {
+            color: #d63384;
+            background: rgba(214, 51, 132, 0.1);
+            transform: translateX(-3px);
+        }
+
+        .back-btn:active {
+            transform: translateX(-1px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive - Keep desktop first */
+        @media (max-width: 1200px) {
+            .wisdom-card {
+                max-width: 700px;
+                padding: 70px 60px;
+                min-height: 450px;
+            }
+
+            .wisdom-header h1 {
+                font-size: 48px;
+            }
+
+            .wisdom-quote {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .wisdom-card {
+                max-width: 600px;
+                padding: 60px 50px;
+                min-height: 400px;
+            }
+
+            .wisdom-header h1 {
+                font-size: 40px;
+            }
+
+            .wisdom-quote {
+                font-size: 24px;
+            }
+
+            .wisdom-subtext {
+                font-size: 16px;
+            }
+
+            .back-btn {
+                font-size: 15px;
+                padding: 14px 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wisdom-card {
+                max-width: 100%;
+                padding: 50px 35px;
+                min-height: 350px;
+            }
+
+            .wisdom-header {
+                margin-bottom: 40px;
+            }
+
+            .wisdom-header h1 {
+                font-size: 32px;
+            }
+
+            .wisdom-quote {
+                font-size: 20px;
+                margin-bottom: 25px;
+            }
+
+            .wisdom-subtext {
+                font-size: 14px;
+                margin-bottom: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wisdom-card">
+        <div class="wisdom-header">
+            <h1>Your Daily Wisdom 🌿</h1>
+        </div>
+
+        <div class="wisdom-quote">
+            {{ daily_wisdom }}
+        </div>
+
+        <div class="wisdom-subtext">
+            A moment of reflection for {{ username }} 🌸
+        </div>
+
+        <div class="wisdom-buttons">
+            <a href="{% url 'home' %}" class="back-btn">← Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,896 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindful Challenges - Mood Mirror</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fef5f9 0%, #f5f1ff 50%, #fffaf7 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            padding: 60px 40px;
+        }
+
+        /* Animated pastel blobs */
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        body::before {
+            width: 500px;
+            height: 500px;
+            background: #ffc0cb;
+            top: -150px;
+            left: -150px;
+            animation: floatBlob1 15s ease-in-out infinite;
+        }
+
+        body::after {
+            width: 600px;
+            height: 600px;
+            background: #e6ccff;
+            bottom: -200px;
+            right: -200px;
+            animation: floatBlob2 18s ease-in-out infinite;
+        }
+
+        @keyframes floatBlob1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        @keyframes floatBlob2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, 30px); }
+        }
+
+        /* Main Container */
+        .challenges-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1300px;
+            margin: 0 auto;
+            animation: slideInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideInScale {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Header */
+        .challenges-header {
+            text-align: center;
+            margin-bottom: 80px;
+            animation: fadeInDown 0.8s ease 0.1s both;
+        }
+
+        .challenges-header h1 {
+            font-size: 56px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 50%, #7c3aab 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.8px;
+            margin-bottom: 15px;
+        }
+
+        .challenges-header p {
+            font-size: 18px;
+            color: #999;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+
+        /* Challenges Horizontal Scroll Container - Desktop First */
+        .challenges-scroll-container {
+            position: relative;
+            margin-bottom: 80px;
+        }
+
+        .challenges-scroll-wrapper {
+            display: flex;
+            gap: 30px;
+            overflow-x: auto;
+            padding: 20px 0;
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(214, 51, 132, 0.3) rgba(255, 255, 255, 0.1);
+        }
+
+        .challenges-scroll-wrapper::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .challenges-scroll-wrapper::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .challenges-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(214, 51, 132, 0.3);
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .challenges-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+            background: rgba(214, 51, 132, 0.6);
+        }
+
+        .challenges-grid {
+            display: flex;
+            gap: 30px;
+        }
+
+        /* Challenge Card */
+        .challenge-card {
+            flex: 0 0 320px;
+            min-width: 320px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(25px);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            border-radius: 25px;
+            padding: 45px 35px;
+            box-shadow: 0 15px 40px rgba(214, 51, 132, 0.12);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: fadeInUp 0.8s ease 0.2s both;
+            min-height: 300px;
+        }
+
+        .challenge-card:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .challenge-card:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .challenge-card:nth-child(4) {
+            animation-delay: 0.5s;
+        }
+
+        .challenge-card:nth-child(5) {
+            animation-delay: 0.6s;
+        }
+
+        .challenge-card:nth-child(6) {
+            animation-delay: 0.7s;
+        }
+
+        /* Card Gradients */
+        .challenge-card:nth-child(1) {
+            background: linear-gradient(135deg, rgba(255, 240, 245, 0.6), rgba(255, 200, 220, 0.2));
+        }
+
+        .challenge-card:nth-child(2) {
+            background: linear-gradient(135deg, rgba(245, 240, 255, 0.6), rgba(230, 200, 250, 0.2));
+        }
+
+        .challenge-card:nth-child(3) {
+            background: linear-gradient(135deg, rgba(240, 250, 255, 0.6), rgba(200, 220, 255, 0.2));
+        }
+
+        .challenge-card:nth-child(4) {
+            background: linear-gradient(135deg, rgba(255, 245, 240, 0.6), rgba(255, 220, 190, 0.2));
+        }
+
+        .challenge-card:nth-child(5) {
+            background: linear-gradient(135deg, rgba(250, 240, 255, 0.6), rgba(220, 190, 255, 0.2));
+        }
+
+        .challenge-card:nth-child(6) {
+            background: linear-gradient(135deg, rgba(240, 255, 250, 0.6), rgba(190, 255, 220, 0.2));
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 30px 70px rgba(214, 51, 132, 0.25);
+            border-color: rgba(214, 51, 132, 0.4);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Challenge Emoji */
+        .challenge-emoji {
+            font-size: 56px;
+            margin-bottom: 24px;
+            display: block;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .challenge-card:hover .challenge-emoji {
+            transform: scale(1.2) rotate(8deg);
+        }
+
+        /* Challenge Text */
+        .challenge-card h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 12px;
+            transition: color 0.3s ease;
+            letter-spacing: -0.5px;
+        }
+
+        .challenge-card p {
+            font-size: 15px;
+            color: #888;
+            margin: 0;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .challenge-card:hover h2 {
+            color: #d63384;
+        }
+
+        /* Navigation */
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease 0.8s both;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 16px;
+            color: #a78bfa;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 14px 32px;
+            border-radius: 20px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            letter-spacing: 0.3px;
+        }
+
+        .back-btn:hover {
+            color: #d63384;
+            background: rgba(214, 51, 132, 0.1);
+            transform: translateX(-3px);
+        }
+
+        .back-btn:active {
+            transform: translateX(-1px);
+        }
+
+        /* Category Sections */
+        .category-section {
+            margin-bottom: 70px;
+            animation: fadeInUp 0.8s ease both;
+        }
+
+        .category-section:nth-child(1) { animation-delay: 0.2s; }
+        .category-section:nth-child(2) { animation-delay: 0.3s; }
+        .category-section:nth-child(3) { animation-delay: 0.4s; }
+        .category-section:nth-child(4) { animation-delay: 0.5s; }
+        .category-section:nth-child(5) { animation-delay: 0.6s; }
+
+        .category-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #d63384;
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+        }
+
+        /* Microtasks Grid */
+        .microtasks-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+
+        /* Microtask Card */
+        .microtask-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(25px);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 30px 25px;
+            box-shadow: 0 12px 35px rgba(214, 51, 132, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            min-height: 320px;
+            animation: fadeInUp 0.8s ease both;
+        }
+
+        /* Animations for each microtask card */
+        .category-section .microtask-card:nth-child(1) { animation-delay: 0.1s; }
+        .category-section .microtask-card:nth-child(2) { animation-delay: 0.2s; }
+        .category-section .microtask-card:nth-child(3) { animation-delay: 0.3s; }
+        .category-section .microtask-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .microtask-card:hover {
+            transform: translateY(-10px) scale(1.01);
+            box-shadow: 0 22px 55px rgba(214, 51, 132, 0.18);
+            border-color: rgba(214, 51, 132, 0.3);
+        }
+
+        /* Individual card gradients */
+        .microtask-card:nth-child(1) {
+            background: linear-gradient(135deg, rgba(255, 240, 245, 0.5), rgba(255, 200, 220, 0.15));
+        }
+
+        .microtask-card:nth-child(2) {
+            background: linear-gradient(135deg, rgba(245, 240, 255, 0.5), rgba(230, 200, 250, 0.15));
+        }
+
+        .microtask-card:nth-child(3) {
+            background: linear-gradient(135deg, rgba(240, 250, 255, 0.5), rgba(200, 220, 255, 0.15));
+        }
+
+        .microtask-card:nth-child(4) {
+            background: linear-gradient(135deg, rgba(255, 245, 240, 0.5), rgba(255, 220, 190, 0.15));
+        }
+
+        /* Task Emoji */
+        .task-emoji {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .microtask-card:hover .task-emoji {
+            transform: scale(1.15) rotate(8deg);
+        }
+
+        /* Task Title */
+        .microtask-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 12px;
+            transition: color 0.3s ease;
+            letter-spacing: -0.3px;
+        }
+
+        .microtask-card:hover h3 {
+            color: #d63384;
+        }
+
+        /* Task Instruction */
+        .task-instruction {
+            font-size: 14px;
+            color: #777;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        /* Mark as Done Button */
+        .mark-done-btn {
+            background: linear-gradient(135deg, rgba(214, 51, 132, 0.15), rgba(155, 79, 168, 0.08));
+            color: #d63384;
+            border: 2px solid #d63384;
+            padding: 12px 28px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 15px rgba(214, 51, 132, 0.1);
+            text-transform: uppercase;
+        }
+
+        .mark-done-btn:hover {
+            transform: scale(1.08);
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 10px 25px rgba(214, 51, 132, 0.3);
+        }
+
+        .mark-done-btn:active {
+            transform: scale(0.96);
+        }
+
+        .mark-done-btn.completed {
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(214, 51, 132, 0.3);
+        }
+
+        /* Scroll Navigation Buttons */
+        .scroll-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(214, 51, 132, 0.3);
+            z-index: 10;
+            opacity: 0.8;
+        }
+
+        .scroll-nav-btn:hover {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 12px 30px rgba(214, 51, 132, 0.4);
+        }
+
+        .scroll-nav-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .scroll-nav-btn.left {
+            left: -30px;
+        }
+
+        .scroll-nav-btn.right {
+            right: -30px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .microtasks-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+
+            .category-title {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .microtasks-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 18px;
+            }
+
+            .microtask-card {
+                padding: 25px 20px;
+                min-height: 300px;
+            }
+
+            .task-emoji {
+                font-size: 42px;
+            }
+
+            .microtask-card h3 {
+                font-size: 16px;
+            }
+
+            .task-instruction {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .microtasks-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .category-title {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+
+            .microtask-card {
+                padding: 22px 18px;
+                min-height: 280px;
+            }
+
+            .task-emoji {
+                font-size: 40px;
+                margin-bottom: 12px;
+            }
+
+            .microtask-card h3 {
+                font-size: 15px;
+                margin-bottom: 10px;
+            }
+
+            .task-instruction {
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive - Desktop First */
+        @media (max-width: 1200px) {
+            .challenges-header h1 {
+                font-size: 48px;
+            }
+
+            .challenges-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+        }
+
+        /* Tablet */
+        @media (max-width: 900px) {
+            .challenges-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .challenges-header h1 {
+                font-size: 40px;
+            }
+
+            body {
+                padding: 40px 20px;
+            }
+
+            .challenge-card {
+                padding: 40px 30px;
+                min-height: 240px;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            body {
+                padding: 30px 15px;
+            }
+
+            .challenges-header h1 {
+                font-size: 32px;
+            }
+
+            .challenges-header p {
+                font-size: 16px;
+            }
+
+            .challenge-card {
+                padding: 35px 25px;
+                border-radius: 20px;
+                min-height: 220px;
+            }
+
+            .challenge-emoji {
+                font-size: 48px;
+                margin-bottom: 16px;
+            }
+
+            .challenge-card h2 {
+                font-size: 20px;
+            }
+
+            .challenge-card p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main Container -->
+    <div class="challenges-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <h1 class="page-title">🌱 Mindful Challenges</h1>
+            <p class="subtitle">Small actions for big wellness improvements. Pick any task and start now.</p>
+        </div>
+
+        <!-- AI Challenges -->
+        {% if challenges %}
+        <div class="challenges-header">
+            <h2 style="color: #d63384; font-size: 24px; font-weight: 700; margin-bottom: 20px;">🎯 Today's Personalized Challenges</h2>
+        </div>
+        <div class="challenges-scroll-container">
+            <button class="scroll-nav-btn left" onclick="scrollChallengesLeft()" title="Scroll Left">❮</button>
+            <div class="challenges-scroll-wrapper" id="challengesScroll">
+                <div class="challenges-grid" id="challengesGrid">
+                    {% for challenge in challenges %}
+                    <div class="challenge-card" style="background: linear-gradient(135deg, rgba(214, 51, 132, 0.08), rgba(155, 79, 168, 0.05)); border: 1.5px solid rgba(214, 51, 132, 0.2);">
+                        <div class="challenge-emoji">{{ challenge.emoji }}</div>
+                        <h3 class="challenge-title">{{ challenge.title }}</h3>
+                        <p class="challenge-description">{{ challenge.description }}</p>
+                        <button class="mark-done-btn" onclick="toggleDone(this)">✓ Done</button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <button class="scroll-nav-btn right" onclick="scrollChallengesRight()" title="Scroll Right">❯</button>
+        </div>
+        {% endif %}
+
+        <!-- Microtasks by Category -->
+        <div class="microtasks-section" style="margin-top: 80px;">
+            <h2 style="color: #d63384; font-size: 26px; font-weight: 700; margin-bottom: 50px; text-align: center;">💡 Wellness Microtasks</h2>
+
+            <!-- Category 1: Emotional Wellness -->
+            <div class="category-section">
+                <div class="category-title">💖 Emotional Wellness</div>
+                <div class="microtasks-grid">
+                    <div class="microtask-card">
+                        <span class="task-emoji">🧘</span>
+                        <h3>5-Minute Meditation</h3>
+                        <p class="task-instruction">Find a quiet space and focus on your breath for 5 minutes.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">💨</span>
+                        <h3>Deep Breathing</h3>
+                        <p class="task-instruction">Try 4-7-8 breathing: Inhale 4, hold 7, exhale 8.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">🤗</span>
+                        <h3>Self-Compassion Break</h3>
+                        <p class="task-instruction">Place your hand on your heart and offer yourself kind words.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">🌸</span>
+                        <h3>Mindful Pause</h3>
+                        <p class="task-instruction">Stop and notice 5 things you can see, 4 you can touch, 3 you can hear.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 2: Social & Connection -->
+            <div class="category-section">
+                <div class="category-title">🤝 Social & Connection</div>
+                <div class="microtasks-grid">
+                    <div class="microtask-card">
+                        <span class="task-emoji">📱</span>
+                        <h3>Reach Out</h3>
+                        <p class="task-instruction">Send a message to someone you care about—just to say hi.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">☎️</span>
+                        <h3>Quick Call</h3>
+                        <p class="task-instruction">Call a friend or family member for a 5-10 minute chat.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">💬</span>
+                        <h3>Give a Compliment</h3>
+                        <p class="task-instruction">Tell someone something genuine and positive about them.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">👂</span>
+                        <h3>Active Listening</h3>
+                        <p class="task-instruction">Ask someone about their day and listen without interrupting.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 3: Cognitive & Creative -->
+            <div class="category-section">
+                <div class="category-title">🧠 Cognitive & Creative</div>
+                <div class="microtasks-grid">
+                    <div class="microtask-card">
+                        <span class="task-emoji">📔</span>
+                        <h3>Gratitude Journal</h3>
+                        <p class="task-instruction">Write down 3 things you're grateful for today.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">🎨</span>
+                        <h3>Creative Expression</h3>
+                        <p class="task-instruction">Doodle, paint, write, or create something without pressure.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">📚</span>
+                        <h3>Read for Joy</h3>
+                        <p class="task-instruction">Read 10 pages of a book you enjoy, guilt-free.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">🧩</span>
+                        <h3>Brain Teaser</h3>
+                        <p class="task-instruction">Solve a puzzle, crossword, or play a brain game.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 4: Physical & Movement -->
+            <div class="category-section">
+                <div class="category-title">🏃 Physical & Movement</div>
+                <div class="microtasks-grid">
+                    <div class="microtask-card">
+                        <span class="task-emoji">🚶</span>
+                        <h3>Mindful Walk</h3>
+                        <p class="task-instruction">Take a 10-15 minute walk and notice your surroundings.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">🤸</span>
+                        <h3>Gentle Stretching</h3>
+                        <p class="task-instruction">Stretch for 5 minutes, focusing on tense areas.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">💃</span>
+                        <h3>Dance Freely</h3>
+                        <p class="task-instruction">Put on your favorite song and dance like nobody's watching.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">💧</span>
+                        <h3>Hydrate & Rest</h3>
+                        <p class="task-instruction">Drink a glass of water and take 3 minutes of rest.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 5: Digital Detox -->
+            <div class="category-section">
+                <div class="category-title">📵 Digital Detox</div>
+                <div class="microtasks-grid">
+                    <div class="microtask-card">
+                        <span class="task-emoji">⏱️</span>
+                        <h3>Phone-Free Time</h3>
+                        <p class="task-instruction">Put your phone away for 30 minutes and do something else.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">👁️</span>
+                        <h3>Eye Rest</h3>
+                        <p class="task-instruction">Follow the 20-20-20 rule: Every 20 min, look 20 ft away for 20 sec.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">🌿</span>
+                        <h3>Nature Connection</h3>
+                        <p class="task-instruction">Spend 15 minutes outside, in sunlight and fresh air.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                    <div class="microtask-card">
+                        <span class="task-emoji">✏️</span>
+                        <h3>Analog Activity</h3>
+                        <p class="task-instruction">Try journaling, sketching, or writing by hand.</p>
+                        <button class="mark-done-btn">✓ Done</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Home Button -->
+        <div style="text-align: center; margin-top: 80px; margin-bottom: 40px;">
+            <a href="{% url 'home' %}" class="back-btn">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Scroll challenges left
+        function scrollChallengesLeft() {
+            const wrapper = document.getElementById('challengesScroll');
+            if (wrapper) {
+                wrapper.scrollBy({ left: -350, behavior: 'smooth' });
+            }
+        }
+
+        // Scroll challenges right
+        function scrollChallengesRight() {
+            const wrapper = document.getElementById('challengesScroll');
+            if (wrapper) {
+                wrapper.scrollBy({ left: 350, behavior: 'smooth' });
+            }
+        }
+
+        // Toggle done button for all mark-done-btn buttons
+        function toggleDone(button) {
+            button.classList.toggle('completed');
+        }
+
+        // Initialize all mark-done buttons to be clickable
+        document.addEventListener('DOMContentLoaded', function() {
+            const allButtons = document.querySelectorAll('.mark-done-btn');
+            allButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    toggleDone(this);
+                });
+            });
+        });
+
+        // Keyboard navigation for challenges
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') scrollChallengesLeft();
+            if (e.key === 'ArrowRight') scrollChallengesRight();
+        });
+
+        // Touch/swipe support for mobile
+        let touchStartX = 0;
+        const wrapper = document.getElementById('challengesScroll');
+
+        if (wrapper) {
+            wrapper.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+            });
+
+            wrapper.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                if (touchStartX - touchEndX > 50) {
+                    scrollChallengesRight();
+                } else if (touchEndX - touchStartX > 50) {
+                    scrollChallengesLeft();
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

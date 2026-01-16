@@ -1,0 +1,488 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Playlist - Mood Mirror</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fef5f9 0%, #f5f1ff 50%, #fffaf7 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            padding: 60px 40px;
+        }
+
+        /* Animated pastel blobs */
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        body::before {
+            width: 500px;
+            height: 500px;
+            background: #ffc0cb;
+            top: -150px;
+            left: -150px;
+            animation: floatBlob1 15s ease-in-out infinite;
+        }
+
+        body::after {
+            width: 600px;
+            height: 600px;
+            background: #e6ccff;
+            bottom: -200px;
+            right: -150px;
+            animation: floatBlob2 20s ease-in-out infinite;
+        }
+
+        .playlist-container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .playlist-header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease both;
+        }
+
+        .playlist-header h1 {
+            font-size: 52px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .playlist-header p {
+            font-size: 18px;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* Mood Card */
+        .mood-card {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(30px);
+            border: 1.5px solid rgba(255, 255, 255, 0.7);
+            border-radius: 30px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 50px rgba(214, 51, 132, 0.12);
+            margin-bottom: 50px;
+            animation: slideInUp 0.8s ease 0.2s both;
+            background: linear-gradient(135deg, rgba(255, 240, 245, 0.6), rgba(255, 200, 220, 0.15));
+        }
+
+        .mood-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .mood-card:hover .mood-icon {
+            transform: scale(1.15) rotate(10deg);
+        }
+
+        .mood-card h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .playlist-description {
+            font-size: 16px;
+            color: #777;
+            line-height: 1.8;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .user-info {
+            text-align: center;
+            font-size: 14px;
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Songs Grid */
+        .songs-section {
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        .songs-section h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #d63384;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .songs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+
+        /* Song Card */
+        .song-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(25px);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            padding: 30px 25px;
+            box-shadow: 0 12px 35px rgba(214, 51, 132, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: slideInUp 0.8s ease both;
+            min-height: 240px;
+            justify-content: center;
+        }
+
+        .song-card:nth-child(1) { animation-delay: 0.4s; }
+        .song-card:nth-child(2) { animation-delay: 0.5s; }
+        .song-card:nth-child(3) { animation-delay: 0.6s; }
+        .song-card:nth-child(4) { animation-delay: 0.7s; }
+        .song-card:nth-child(5) { animation-delay: 0.8s; }
+
+        /* Individual card gradients */
+        .song-card:nth-child(1) {
+            background: linear-gradient(135deg, rgba(255, 240, 245, 0.6), rgba(255, 200, 220, 0.15));
+        }
+
+        .song-card:nth-child(2) {
+            background: linear-gradient(135deg, rgba(245, 240, 255, 0.6), rgba(230, 200, 250, 0.15));
+        }
+
+        .song-card:nth-child(3) {
+            background: linear-gradient(135deg, rgba(240, 250, 255, 0.6), rgba(200, 220, 255, 0.15));
+        }
+
+        .song-card:nth-child(4) {
+            background: linear-gradient(135deg, rgba(255, 245, 240, 0.6), rgba(255, 220, 190, 0.15));
+        }
+
+        .song-card:nth-child(5) {
+            background: linear-gradient(135deg, rgba(245, 255, 240, 0.6), rgba(200, 255, 190, 0.15));
+        }
+
+        .song-card:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 25px 60px rgba(214, 51, 132, 0.15);
+            border-color: rgba(214, 51, 132, 0.3);
+        }
+
+        .song-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 100%);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .song-card:hover .song-number {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .song-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .song-card:hover .song-title {
+            color: #d63384;
+        }
+
+        .song-artist {
+            font-size: 14px;
+            color: #888;
+            font-weight: 400;
+        }
+
+        /* Play Button */
+        .play-btn {
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 8px 20px rgba(214, 51, 132, 0.2);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            margin-top: 15px;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(214, 51, 132, 0.3);
+        }
+
+        .play-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 100%);
+            color: white;
+            padding: 14px 32px;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 8px 25px rgba(214, 51, 132, 0.2);
+            letter-spacing: 0.3px;
+            text-align: center;
+            margin-top: 40px;
+            animation: fadeInUp 0.8s ease 0.9s both;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(214, 51, 132, 0.3);
+        }
+
+        .back-btn:active {
+            transform: translateX(-1px);
+        }
+
+        .footer-nav {
+            text-align: center;
+            margin-top: 60px;
+            margin-bottom: 40px;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes floatBlob1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 30px); }
+        }
+
+        @keyframes floatBlob2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, -30px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .playlist-header h1 {
+                font-size: 44px;
+            }
+
+            .mood-card {
+                padding: 40px 30px;
+            }
+
+            .songs-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            body {
+                padding: 50px 30px;
+            }
+
+            .playlist-header {
+                margin-bottom: 40px;
+            }
+
+            .playlist-header h1 {
+                font-size: 36px;
+            }
+
+            .playlist-header p {
+                font-size: 16px;
+            }
+
+            .mood-card {
+                padding: 35px 25px;
+            }
+
+            .mood-card h2 {
+                font-size: 28px;
+            }
+
+            .songs-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .song-card {
+                padding: 25px 20px;
+                min-height: 220px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 40px 20px;
+            }
+
+            .playlist-header h1 {
+                font-size: 28px;
+            }
+
+            .playlist-header p {
+                font-size: 14px;
+            }
+
+            .mood-icon {
+                font-size: 60px;
+                margin-bottom: 15px;
+            }
+
+            .mood-card h2 {
+                font-size: 24px;
+            }
+
+            .playlist-description {
+                font-size: 14px;
+            }
+
+            .songs-section h3 {
+                font-size: 20px;
+            }
+
+            .song-card {
+                padding: 20px 15px;
+                min-height: 200px;
+            }
+
+            .song-number {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .song-title {
+                font-size: 16px;
+            }
+
+            .song-artist {
+                font-size: 12px;
+            }
+
+            .play-btn {
+                padding: 12px 24px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="playlist-container">
+        <!-- Header -->
+        <div class="playlist-header">
+            <h1>🎵 Your Personalized Playlist</h1>
+            <p>Music therapy tailored to your emotional needs</p>
+        </div>
+
+        <!-- Mood Card -->
+        <div class="mood-card">
+            <span class="mood-icon">{{ playlist.emoji }}</span>
+            <h2>{{ playlist.mood }} Vibes</h2>
+            <p class="playlist-description">{{ playlist_description }}</p>
+            <p class="user-info">Crafted for your {{ user_mood|lower }} mood, {{ username }} 🎧</p>
+        </div>
+
+        <!-- Songs Section -->
+        <div class="songs-section">
+            <h3>🎵 Your Playlist</h3>
+            <div class="songs-grid">
+                {% for song in playlist.songs %}
+                <div class="song-card">
+                    <div class="song-number">{{ forloop.counter }}</div>
+                    <h4 class="song-title">{{ song.title }}</h4>
+                    <p class="song-artist">by {{ song.artist }}</p>
+                    <button class="play-btn" onclick="alert('🎵 Playing: {{ song.title }} by {{ song.artist }}')">▶ Play</button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Back to Home Button -->
+        <div class="footer-nav">
+            <a href="{% url 'home' %}" class="back-btn">← Back to Home</a>
+        </div>
+    </div>
+</body>
+
+</html>

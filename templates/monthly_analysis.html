@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monthly Mood Analysis · MoodMirror</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body class="analysis-bg">
+
+<div class="analysis-container">
+
+    <h2>Monthly Mood Insights</h2>
+    <p class="subtitle">A gentle reflection of your emotional journey 💜</p>
+
+    {% if error %}
+        <p class="soft-error">{{ error }}</p>
+    {% else %}
+
+    <div class="analysis-card">
+        <h3>🌙 Mood Overview</h3>
+        <p>{{ analysis.overview }}</p>
+    </div>
+
+    <div class="analysis-card">
+        <h3>📈 Patterns Observed</h3>
+        <ul>
+            {% for p in analysis.patterns %}
+                <li>• {{ p }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="analysis-card">
+        <h3>🧠 Emotional Insight</h3>
+        <p>{{ analysis.insight }}</p>
+    </div>
+
+    <div class="analysis-card soft-highlight">
+        <h3>🌱 Gentle Suggestions</h3>
+        <ul>
+            {% for s in analysis.suggestions %}
+                <li>✨ {{ s }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% endif %}
+
+    <a href="{% url 'mood_entry' %}" class="back-btn">← Back to Journal</a>
+
+</div>
+
+</body>
+</html>

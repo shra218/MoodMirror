@@ -1,0 +1,50 @@
+<div class="journal-container">
+    <h2>📝 Journal Your Mood</h2>
+    <p>Reflect and track your feelings today 💜</p>
+
+    <!-- FORM -->
+    <form method="POST" action="{% url 'journaling_success' %}">
+        {% csrf_token %}
+
+        <select name="mood_type" required>
+            <option value="">Select your mood 🌈</option>
+            <option value="happy">😊 Happy</option>
+            <option value="sad">😔 Sad</option>
+            <option value="anxious">😰 Anxious</option>
+            <option value="angry">😡 Angry</option>
+            <option value="calm">😌 Calm</option>
+            <option value="tired">😴 Tired</option>
+        </select>
+
+        <textarea name="note" placeholder="Write your thoughts..." required></textarea>
+
+        <button type="submit" class="cta-btn">Save Mood</button>
+    </form>
+
+    <!-- 🌸 ADD THIS EXACTLY HERE -->
+    {% if suggestion %}
+    <div style="margin-top:20px; padding:15px; background:#fff0f5; border-radius:16px;">
+        <h3>{{ suggestion.title }}</h3>
+        <p>{{ suggestion.exercise }}</p>
+    </div>
+{% else %}
+    <p style="color:red;">⚠️ No suggestion received</p>
+{% endif %}
+
+    <!-- HISTORY -->
+    <div class="mood-history">
+        <h3>Your Previous Entries</h3>
+        <ul>
+            {% for entry in moods %}
+                <li>
+                    <span class="date">
+                        {{ entry.created_at|date:"M d, Y H:i" }}
+                    </span>
+                    <p>{{ entry.note }}</p>
+                </li>
+            {% empty %}
+                <li>No reflections yet 💜</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

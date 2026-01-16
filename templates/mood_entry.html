@@ -1,0 +1,360 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal Your Mood - Mood Mirror</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fef5f9 0%, #f5f1ff 50%, #fffaf7 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: auto;
+            position: relative;
+            padding: 40px 20px;
+        }
+
+        /* Animated pastel blobs */
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        body::before {
+            width: 500px;
+            height: 500px;
+            background: #ffc0cb;
+            top: -150px;
+            left: -150px;
+            animation: floatBlob1 15s ease-in-out infinite;
+        }
+
+        body::after {
+            width: 600px;
+            height: 600px;
+            background: #e6ccff;
+            bottom: -200px;
+            right: -200px;
+            animation: floatBlob2 18s ease-in-out infinite;
+        }
+
+        @keyframes floatBlob1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        @keyframes floatBlob2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, 30px); }
+        }
+
+        /* Mood Entry Container - 2 Column Horizontal Layout */
+        .mood-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            min-width: 900px;
+            max-width: 1100px;
+            height: auto;
+            display: flex;
+            flex-direction: row;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(25px);
+            border: 1.5px solid rgba(255, 255, 255, 0.7);
+            border-radius: 40px;
+            box-shadow: 0 25px 70px rgba(214, 51, 132, 0.15);
+            animation: slideInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+        }
+
+        @keyframes slideInScale {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Left Column - 40% */
+        .mood-left {
+            width: 40%;
+            padding: 80px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+            border-right: 1.5px solid rgba(255, 255, 255, 0.5);
+            background: linear-gradient(135deg, rgba(255, 240, 245, 0.3) 0%, rgba(245, 240, 255, 0.2) 100%);
+        }
+
+        /* Right Column - 60% */
+        .mood-right {
+            width: 60%;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        /* Header - Left Column */
+        .mood-header {
+            text-align: left;
+        }
+
+        .mood-header h1 {
+            font-size: 52px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 50%, #7c3aab 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+
+        .mood-header p {
+            font-size: 18px;
+            color: #999;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+            line-height: 1.5;
+        }
+
+        /* Streak Display - Left Column */
+        .streak-badge {
+            background: linear-gradient(135deg, #ffe0ec 0%, #f3e8ff 100%);
+            border: 1.5px solid rgba(214, 51, 132, 0.25);
+            border-radius: 24px;
+            padding: 20px 30px;
+            text-align: left;
+            font-size: 16px;
+            font-weight: 700;
+            color: #d63384;
+            box-shadow: 0 10px 25px rgba(214, 51, 132, 0.12);
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Form Styling - Right Column */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* Form Fields */
+        form div {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #555;
+            letter-spacing: 0.3px;
+        }
+
+        select,
+        textarea,
+        input[type="text"],
+        input[type="date"] {
+            padding: 16px 20px;
+            border: 1.5px solid rgba(214, 51, 132, 0.2);
+            border-radius: 18px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.7);
+            color: #555;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        select:focus,
+        textarea:focus,
+        input[type="text"]:focus,
+        input[type="date"]:focus {
+            border-color: #d63384;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 140px;
+            line-height: 1.7;
+        }
+
+        /* Button Wrapper */
+        .button-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-top: 15px;
+        }
+
+        /* Submit Button */
+        .save-btn {
+            padding: 18px 32px;
+            border: none;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #f472b6 0%, #d946ef 50%, #a855f7 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 17px;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 18px 45px rgba(214, 51, 132, 0.35);
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            letter-spacing: 0.4px;
+            width: 100%;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 28px 60px rgba(214, 51, 132, 0.45);
+        }
+
+        .save-btn:active {
+            transform: translateY(-2px);
+        }
+
+        /* Back Button - Below Form */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 15px;
+            color: #a78bfa;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 14px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            letter-spacing: 0.3px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .back-button:hover {
+            color: #d63384;
+            background: rgba(214, 51, 132, 0.1);
+            transform: translateX(-3px);
+        }
+
+        .back-button:active {
+            transform: translateX(-1px);
+        }
+
+        /* Error Messages */
+        .errorlist {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .errorlist li {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-top: 6px;
+            border-left: 3px solid #dc2626;
+        }
+
+        /* Desktop Breakpoint - Keep horizontal */
+        @media (max-width: 1200px) {
+            .mood-container {
+                min-width: 850px;
+            }
+
+            .mood-left {
+                width: 38%;
+                padding: 70px 50px;
+            }
+
+            .mood-right {
+                width: 62%;
+                padding: 50px 70px;
+            }
+
+            .mood-header h1 {
+                font-size: 48px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mood-container">
+        <!-- Left Column -->
+        <div class="mood-left">
+            <div class="mood-header">
+                <h1>Journal Your Mood ✨</h1>
+                <p>Express yourself freely in this safe space</p>
+            </div>
+
+            {% if streak > 0 %}
+                <div class="streak-badge">
+                    🌸 You're on a {{ streak }}-day mood streak! Keep it up! 💖
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column -->
+        <div class="mood-right">
+            <form method="POST">
+                {% csrf_token %}
+                {{ form }}
+                
+                <div class="button-wrapper">
+                    <button type="submit" class="save-btn">💾 Save Mood</button>
+                    <a href="{% url 'home' %}" class="back-button">← Back to Home Page</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

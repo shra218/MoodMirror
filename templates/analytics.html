@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+.analytics-wrapper {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.analytics-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #5b4b8a;
+    margin-bottom: 10px;
+}
+
+.analytics-sub {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+}
+
+.card h3 {
+    color: #6a5acd;
+    margin-bottom: 10px;
+}
+
+.mood-list li {
+    list-style: none;
+    padding: 6px 0;
+    font-weight: 500;
+}
+
+.insight {
+    background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+    color: #333;
+}
+</style>
+
+<div class="analytics-wrapper">
+
+    <h1 class="analytics-title">Your Emotional Insights 🌱</h1>
+    <p class="analytics-sub">
+        Patterns based on your reflections — gentle, not judgmental.
+    </p>
+
+    <div class="card-grid">
+
+        <!-- Mood Distribution -->
+        <div class="card">
+            <h3>Mood Breakdown</h3>
+            <ul class="mood-list">
+                {% for mood in mood_data %}
+                    <li>• {{ mood.mood|title }} — {{ mood.count }}</li>
+                {% empty %}
+                    <li>No data yet 🌸</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Insight Card -->
+        <div class="card insight">
+            <h3>Weekly Insight</h3>
+            <p>
+                You're becoming more self-aware by checking in with yourself.
+                Even noticing your emotions is progress 🤍
+            </p>
+        </div>
+
+        <!-- Placeholder for future chart -->
+        <div class="card">
+            <h3>Trends (Coming Soon)</h3>
+            <p>
+                Visual mood trends will appear here as you add more reflections.
+            </p>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

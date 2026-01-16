@@ -1,0 +1,805 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Playlists - Mood Mirror</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fef5f9 0%, #f5f1ff 50%, #fffaf7 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px 10px;
+        }
+
+        /* Animated pastel blobs */
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        body::before {
+            width: 500px;
+            height: 500px;
+            background: #ffc0cb;
+            top: -150px;
+            left: -150px;
+            animation: floatBlob1 15s ease-in-out infinite;
+        }
+
+        body::after {
+            width: 600px;
+            height: 600px;
+            background: #e6ccff;
+            bottom: -200px;
+            right: -150px;
+            animation: floatBlob2 20s ease-in-out infinite;
+        }
+
+        .playlists-container {
+            max-width: 100%;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+            padding: 0 5px;
+        }
+
+        /* Header */
+        .playlists-header {
+            text-align: center;
+            margin-bottom: 25px;
+            animation: fadeInDown 0.8s ease both;
+        }
+
+        .playlists-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+            letter-spacing: -1.5px;
+        }
+
+        .playlists-header p {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* Playlists Horizontal Scroll Container */
+        .playlists-grid {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            margin-bottom: 25px;
+            scroll-behavior: smooth;
+            /* Hide scrollbar but allow scroll */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(214, 51, 132, 0.3) rgba(214, 51, 132, 0.1);
+        }
+
+        /* Firefox scrollbar styling */
+        .playlists-grid::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .playlists-grid::-webkit-scrollbar-track {
+            background: rgba(214, 51, 132, 0.1);
+            border-radius: 10px;
+        }
+
+        .playlists-grid::-webkit-scrollbar-thumb {
+            background: rgba(214, 51, 132, 0.3);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .playlists-grid::-webkit-scrollbar-thumb:hover {
+            background: rgba(214, 51, 132, 0.5);
+        }
+
+        /* Playlist Card */
+        .playlist-card {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(30px);
+            border: 1.5px solid rgba(255, 255, 255, 0.7);
+            border-radius: 22px;
+            padding: 22px 16px;
+            box-shadow: 0 15px 45px rgba(214, 51, 132, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 400px;
+            min-width: 280px;
+            flex-shrink: 0;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: slideInUp 0.8s ease both;
+        }
+
+        .playlist-card:nth-child(1) { animation-delay: 0.1s; }
+        .playlist-card:nth-child(2) { animation-delay: 0.2s; }
+        .playlist-card:nth-child(3) { animation-delay: 0.3s; }
+        .playlist-card:nth-child(4) { animation-delay: 0.4s; }
+        .playlist-card:nth-child(5) { animation-delay: 0.5s; }
+
+        /* Card Gradients - 5 unique pastel gradients */
+        .playlist-card:nth-child(1) {
+            background: linear-gradient(135deg, rgba(255, 240, 245, 0.7), rgba(255, 200, 220, 0.3));
+        }
+
+        .playlist-card:nth-child(2) {
+            background: linear-gradient(135deg, rgba(245, 240, 255, 0.7), rgba(230, 200, 250, 0.3));
+        }
+
+        .playlist-card:nth-child(3) {
+            background: linear-gradient(135deg, rgba(240, 250, 255, 0.7), rgba(200, 220, 255, 0.3));
+        }
+
+        .playlist-card:nth-child(4) {
+            background: linear-gradient(135deg, rgba(255, 245, 240, 0.7), rgba(255, 220, 190, 0.3));
+        }
+
+        .playlist-card:nth-child(5) {
+            background: linear-gradient(135deg, rgba(245, 255, 240, 0.7), rgba(200, 255, 190, 0.3));
+        }
+
+        .playlist-card:hover {
+            transform: translateY(-18px) scale(1.02);
+            box-shadow: 0 30px 70px rgba(214, 51, 132, 0.2);
+            border-color: rgba(214, 51, 132, 0.4);
+        }
+
+        /* Card Header */
+        .playlist-header-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .playlist-emoji {
+            font-size: 48px;
+            margin-bottom: 8px;
+            display: block;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .playlist-card:hover .playlist-emoji {
+            transform: scale(1.15) rotate(12deg);
+        }
+
+        .playlist-title {
+            font-size: 19px;
+            font-weight: 800;
+            color: #555;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .playlist-card:hover .playlist-title {
+            color: #d63384;
+        }
+
+        .playlist-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #a78bfa;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        /* Description */
+        .playlist-description {
+            font-size: 12px;
+            color: #777;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            font-weight: 400;
+        }
+
+        /* Songs List */
+        .songs-list {
+            flex-grow: 1;
+            margin-bottom: 12px;
+        }
+
+        .songs-list h4 {
+            font-size: 11px;
+            font-weight: 700;
+            color: #d63384;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 10px;
+        }
+
+        .song-item {
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(214, 51, 132, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .song-item:last-child {
+            border-bottom: none;
+        }
+
+        .song-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            flex: 1;
+        }
+
+        .song-artist {
+            font-size: 10px;
+            color: #999;
+            font-weight: 400;
+            margin-left: 6px;
+        }
+
+        .song-item:hover .song-name {
+            color: #d63384;
+        }
+
+        /* Action Buttons */
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .play-btn,
+        .favorite-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            letter-spacing: 0.2px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-btn::before,
+        .favorite-btn::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s ease, height 0.5s ease;
+            z-index: 0;
+        }
+
+        .play-btn,
+        .favorite-btn {
+            position: relative;
+        }
+
+        .play-btn span,
+        .favorite-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(214, 51, 132, 0.2);
+        }
+
+        .play-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 35px rgba(214, 51, 132, 0.35);
+            letter-spacing: 0.5px;
+        }
+
+        .play-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .play-btn:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 0 6px 20px rgba(214, 51, 132, 0.2);
+        }
+
+        .favorite-btn {
+            background: linear-gradient(135deg, rgba(214, 51, 132, 0.15), rgba(155, 79, 168, 0.08));
+            color: #d63384;
+            border: 2px solid #d63384;
+        }
+
+        .favorite-btn:hover {
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 100%);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(214, 51, 132, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        .favorite-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .favorite-btn:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 0 6px 20px rgba(214, 51, 132, 0.15);
+        }
+
+        .favorite-btn.added {
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(214, 51, 132, 0.2);
+        }
+
+        .favorite-btn.added:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(214, 51, 132, 0.3);
+        }
+
+        /* Playing State for Play Button */
+        .play-btn.playing {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .play-btn.playing::after {
+            content: "✓";
+            margin-left: 6px;
+            font-weight: 900;
+        }
+
+        .play-btn.playing:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 100%);
+            color: white;
+            padding: 9px 22px;
+            text-decoration: none;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 8px 25px rgba(214, 51, 132, 0.2);
+            letter-spacing: 0.2px;
+            text-align: center;
+            animation: fadeInUp 0.8s ease 0.7s both;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(214, 51, 132, 0.3);
+        }
+
+        .back-btn:active {
+            transform: translateX(-1px);
+        }
+
+        .footer-nav {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes floatBlob1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 30px); }
+        }
+
+        @keyframes floatBlob2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, -30px); }
+        }
+
+        /* Responsive - Desktop First */
+        @media (max-width: 1400px) {
+            .playlists-grid {
+                gap: 25px;
+            }
+
+            .playlist-card {
+                min-width: 340px;
+                padding: 40px 30px;
+            }
+
+            .playlists-header h1 {
+                font-size: 48px;
+            }
+        }
+
+        @media (max-width: 1000px) {
+            body {
+                padding: 50px 30px;
+            }
+
+            .playlists-header {
+                margin-bottom: 50px;
+            }
+
+            .playlists-header h1 {
+                font-size: 40px;
+            }
+
+            .playlists-header p {
+                font-size: 16px;
+            }
+
+            .playlists-grid {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+
+            .playlist-card {
+                min-width: calc(50% - 10px);
+                flex-shrink: 0;
+                padding: 35px 25px;
+                min-height: 500px;
+            }
+
+            .playlist-emoji {
+                font-size: 56px;
+            }
+
+            .playlist-title {
+                font-size: 24px;
+            }
+
+            .playlist-description {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .playlists-grid {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .playlist-card {
+                min-width: 100%;
+                min-height: auto;
+            }
+
+            .playlists-header h1 {
+                font-size: 36px;
+            }
+
+            .playlists-header {
+                margin-bottom: 45px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 40px 20px;
+            }
+
+            .playlists-header h1 {
+                font-size: 32px;
+            }
+
+            .playlists-header p {
+                font-size: 14px;
+            }
+
+            .playlists-header {
+                margin-bottom: 40px;
+            }
+
+            .playlist-card {
+                padding: 32px 20px;
+            }
+
+            .playlist-emoji {
+                font-size: 48px;
+                margin-bottom: 12px;
+            }
+
+            .playlist-title {
+                font-size: 20px;
+            }
+
+            .playlist-label {
+                font-size: 11px;
+            }
+
+            .playlist-description {
+                font-size: 13px;
+                margin-bottom: 20px;
+            }
+
+            .song-item {
+                padding: 10px 0;
+            }
+
+            .song-name {
+                font-size: 13px;
+            }
+
+            .song-artist {
+                font-size: 11px;
+            }
+
+            .songs-list h4 {
+                font-size: 12px;
+                margin-bottom: 12px;
+            }
+
+            .play-btn,
+            .favorite-btn {
+                padding: 10px 14px;
+                font-size: 12px;
+            }
+
+            .card-actions {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="playlists-container">
+        <!-- Header -->
+        <div class="playlists-header">
+            <h1>🎵 Your Mood Playlists</h1>
+            <p>Personalized music therapy based on your emotional journey</p>
+        </div>
+
+        <!-- Playlists Grid -->
+        <div class="playlists-grid">
+            {% for playlist in playlists %}
+            <div class="playlist-card">
+                <!-- Header Section -->
+                <div class="playlist-header-card">
+                    <span class="playlist-emoji">{{ playlist.emoji }}</span>
+                    <h2 class="playlist-title">{{ playlist.title }}</h2>
+                    <span class="playlist-label">{{ playlist.label }}</span>
+                </div>
+
+                <!-- Description -->
+                <p class="playlist-description">{{ playlist.description }}</p>
+
+                <!-- Songs List -->
+                <div class="songs-list">
+                    <h4>🎵 Recommended Tracks</h4>
+                    {% for song in playlist.songs %}
+                    <div class="song-item">
+                        <span class="song-name">{{ song.title }}</span>
+                        <span class="song-artist">{{ song.artist }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="card-actions">
+                    <button class="play-btn" onclick="playPlaylist('{{ playlist.title }}')"><span>▶ Play</span></button>
+                    <button class="favorite-btn" onclick="toggleFavorite(this, '{{ playlist.title }}')"><span>♡ Save</span></button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Back to Home Button -->
+        <div class="footer-nav">
+            <a href="{% url 'home' %}" class="back-btn">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Global audio context
+        let audioContext = null;
+
+        // Initialize audio context on user interaction
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            // Resume if suspended (required by browser autoplay policies)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            return audioContext;
+        }
+
+        // Create a melodic audio notification with proper volume
+        function playAudioSnippet(duration = 0.6, frequency = 600) {
+            try {
+                const ctx = initAudioContext();
+                
+                // Create oscillator
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                // Connect to destination
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                // Sine wave for pure tone
+                osc.type = 'sine';
+                osc.frequency.value = frequency;
+                
+                // Set very high volume for audibility
+                gain.gain.setValueAtTime(1.0, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+                // Start and stop
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + duration);
+                
+                console.log('Audio playing at ' + frequency + ' Hz for ' + duration + 's');
+            } catch (e) {
+                console.error('Audio playback error:', e);
+            }
+        }
+
+        // Play two-note melody
+        function playMelody() {
+            initAudioContext();
+            // First note
+            playAudioSnippet(0.3, 528);
+            // Second note (delayed)
+            setTimeout(() => {
+                playAudioSnippet(0.4, 741);
+            }, 350);
+        }
+
+        // Play playlist
+        function playPlaylist(playlistName) {
+            const button = event.target.closest('.play-btn');
+            
+            if (!button.classList.contains('playing')) {
+                // Play two-note melody
+                playMelody();
+                
+                // Mark as playing
+                button.classList.add('playing');
+                const span = button.querySelector('span');
+                span.textContent = '▶ Playing...';
+                
+                // Simulate playlist playing for 3 seconds
+                setTimeout(() => {
+                    button.classList.remove('playing');
+                    span.textContent = '▶ Play';
+                }, 3000);
+                
+                // Show notification
+                setTimeout(() => {
+                    alert(`🎵 Now playing: ${playlistName} playlist\n\nEnjoy the music! 🎧`);
+                }, 200);
+            }
+        }
+
+        // Toggle favorite
+        function toggleFavorite(button, playlistName) {
+            // Play single beep
+            playAudioSnippet(0.15, 440);
+            
+            button.classList.toggle('added');
+            const isAdded = button.classList.contains('added');
+            const span = button.querySelector('span');
+            span.textContent = isAdded ? '♥ Saved' : '♡ Save';
+            
+            // Optional: Show confirmation
+            if (isAdded) {
+                setTimeout(() => {
+                    alert(`❤️ Added "${playlistName}" to your favorites!`);
+                }, 300);
+            }
+        }
+
+        // Initialize buttons on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize audio context on first user interaction
+            document.addEventListener('click', function() {
+                initAudioContext();
+            }, { once: true });
+
+            const playButtons = document.querySelectorAll('.play-btn');
+            const favoriteButtons = document.querySelectorAll('.favorite-btn');
+
+            playButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                });
+            });
+
+            favoriteButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                });
+            });
+
+            // Add keyboard support for accessibility
+            playButtons.forEach(btn => {
+                btn.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        playPlaylist(btn.closest('.playlist-card').querySelector('.playlist-title').textContent);
+                    }
+                });
+            });
+
+            favoriteButtons.forEach(btn => {
+                btn.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleFavorite(btn, btn.closest('.playlist-card').querySelector('.playlist-title').textContent);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

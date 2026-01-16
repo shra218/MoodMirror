@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="thankyou-card">
+  <h2>Thank you for reflecting 🌷</h2>
+  <p>
+    Your emotions matter.  
+    Taking a moment to write them down is a powerful step toward healing.
+  </p>
+
+  <a href="{% url 'mood_entry' %}" class="btn-secondary">
+    Add another entry
+  </a>
+</div>
+{% endblock %}

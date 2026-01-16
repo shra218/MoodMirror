@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MoodMirror AI</title>
+
+<style>
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 🌈 Mood Themes */
+body.happy {
+    background: linear-gradient(135deg, #ffe0ec, #ffd6c9);
+}
+body.calm {
+    background: linear-gradient(135deg, #e6e1ff, #f3e5f5);
+}
+body.sad {
+    background: linear-gradient(135deg, #dfe9f3, #f5f7fa);
+}
+body.angry {
+    background: linear-gradient(135deg, #ffd3b6, #ffaaa5);
+}
+body.anxious {
+    background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+}
+
+.container {
+    width: 700px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(18px);
+    border-radius: 28px;
+    padding: 40px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #6a4fa3;
+}
+
+.mood-emoji {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+/* Suggestion Card */
+.card {
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.card h3 {
+    color: #ec407a;
+    margin-bottom: 15px;
+}
+
+.suggestion-text {
+    font-size: 17px;
+    color: #4a3f6b;
+    line-height: 1.7;
+}
+
+/* Button */
+.btn {
+    margin-top: 30px;
+    display: inline-block;
+    padding: 14px 32px;
+    border-radius: 26px;
+    background: linear-gradient(135deg, #ec407a, #ab47bc);
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
+    box-shadow: 0 12px 30px rgba(171,71,188,0.4);
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #8b78c6;
+}
+</style>
+</head>
+
+<body class="{{ mood_type|default:'calm' }}">
+
+<div class="container">
+
+    <div class="header">
+        <div class="mood-emoji">
+            {% if mood_type == 'happy' %}😊
+            {% elif mood_type == 'sad' %}🌧️
+            {% elif mood_type == 'angry' %}🔥
+            {% elif mood_type == 'anxious' %}🌿
+            {% else %}🧘‍♀️
+            {% endif %}
+        </div>
+        <h1>MoodMirror AI</h1>
+        <p>Your feelings matter 💜</p>
+    </div>
+
+    <div class="card">
+        <h3>Personalized Suggestion</h3>
+
+        {% if llm_suggestion %}
+            <div class="suggestion-text">
+                {{ llm_suggestion }}
+            </div>
+        {% else %}
+            <p>No suggestion available right now.</p>
+        {% endif %}
+        
+
+    </div>
+
+    <div style="text-align:center;">
+        <a href="{% url 'mood_entry' %}" class="btn">
+            Journal Another Mood
+        </a>
+    </div>
+    
+
+    <div class="footer">
+        Take a deep breath 🌸 You’re doing your best.
+    </div>
+
+</div>
+
+</body>
+</html>

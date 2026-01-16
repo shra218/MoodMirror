@@ -1,0 +1,415 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Mood Mirror</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background: linear-gradient(135deg, #fef5f9 0%, #f5f1ff 50%, #fffaf7 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated pastel blobs */
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        body::before {
+            width: 500px;
+            height: 500px;
+            background: #ffc0cb;
+            top: -100px;
+            left: -100px;
+        }
+
+        body::after {
+            width: 600px;
+            height: 600px;
+            background: #e6ccff;
+            bottom: -200px;
+            right: -150px;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 25px 0;
+            box-shadow: 0 4px 20px rgba(200, 100, 150, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 50px;
+        }
+
+        .nav-left {
+            display: flex;
+            gap: 40px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 8px 16px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        nav a::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 16px;
+            right: 16px;
+            height: 2px;
+            background: linear-gradient(90deg, #d63384, #a855b5);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #d63384;
+            background: rgba(214, 51, 132, 0.08);
+        }
+
+        nav a:hover::after {
+            transform: scaleX(1);
+        }
+
+        .logout-btn {
+            margin-left: auto;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        /* Header Section */
+        .header {
+            margin-bottom: 70px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-size: 56px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #d63384 0%, #9b4fa8 50%, #7c3aab 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            font-size: 20px;
+            color: #999;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+
+        /* Desktop-First Grid - 3 Columns */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            border-radius: 28px;
+            padding: 50px 35px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 15px 40px rgba(214, 51, 132, 0.12);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 280px;
+            position: relative;
+            overflow: hidden;
+            group-hover: scale(1.05);
+        }
+
+        /* Individual card gradients */
+        .card:nth-child(1) {
+            background: linear-gradient(135deg, rgba(255, 240, 245, 0.6), rgba(255, 200, 220, 0.2));
+        }
+
+        .card:nth-child(2) {
+            background: linear-gradient(135deg, rgba(245, 240, 255, 0.6), rgba(230, 200, 250, 0.2));
+        }
+
+        .card:nth-child(3) {
+            background: linear-gradient(135deg, rgba(240, 250, 255, 0.6), rgba(200, 220, 255, 0.2));
+        }
+
+        .card:nth-child(4) {
+            background: linear-gradient(135deg, rgba(255, 245, 240, 0.6), rgba(255, 220, 190, 0.2));
+        }
+
+        .card:nth-child(5) {
+            background: linear-gradient(135deg, rgba(250, 240, 255, 0.6), rgba(220, 190, 255, 0.2));
+        }
+
+        .card:nth-child(6) {
+            background: linear-gradient(135deg, rgba(240, 255, 250, 0.6), rgba(190, 255, 220, 0.2));
+        }
+
+        .card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 30px 70px rgba(214, 51, 132, 0.25);
+            border-color: rgba(214, 51, 132, 0.4);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .card-icon {
+            font-size: 56px;
+            margin-bottom: 24px;
+            display: block;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .card:hover .card-icon {
+            transform: scale(1.2) rotate(8deg);
+        }
+
+        .card h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 12px;
+            transition: color 0.3s ease;
+            letter-spacing: -0.5px;
+        }
+
+        .card p {
+            font-size: 16px;
+            color: #888;
+            margin: 0;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .card:hover h2 {
+            color: #d63384;
+        }
+
+        /* Logout card special styling */
+        .card:last-child:hover {
+            border-color: rgba(220, 100, 150, 0.4);
+        }
+
+        /* 2-Column layout for moderate screens */
+        @media (max-width: 1400px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 28px;
+            }
+
+            nav {
+                padding: 0 30px;
+                gap: 30px;
+            }
+
+            .container {
+                padding: 50px 30px;
+                max-width: 1000px;
+            }
+
+            .header h1 {
+                font-size: 48px;
+            }
+        }
+
+        /* Single column for tablets and below */
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 40px;
+            }
+
+            .card {
+                min-height: 250px;
+                padding: 40px 30px;
+            }
+        }
+
+        /* Mobile adjustments (minimal, desktop-first approach) */
+        @media (max-width: 600px) {
+            nav {
+                padding: 0 20px;
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+
+            .nav-left {
+                gap: 15px;
+                flex-basis: 100%;
+                flex-wrap: wrap;
+            }
+
+            .logout-btn {
+                margin-left: 0;
+                flex-basis: 100%;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+
+            .header {
+                margin-bottom: 40px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .card {
+                padding: 30px 20px;
+                min-height: 220px;
+            }
+
+            .card-icon {
+                font-size: 44px;
+                margin-bottom: 16px;
+            }
+
+            .card h2 {
+                font-size: 22px;
+            }
+
+            .card p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <nav>
+            <div class="nav-left">
+                
+            </div>
+            <a href="/logout/" class="logout-btn">Logout</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Welcome back, {{ user.first_name|default:user.username }}! ✨</h1>
+            <p>Your mental wellness companion</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Journal Your Mood Card -->
+            <a href="/entry/" class="card">
+                <div class="card-icon">📝</div>
+                <h2>Journal Your Mood</h2>
+                <p>Express your feelings and track your emotional journey</p>
+            </a>
+
+            <!-- Monthly Analysis Card -->
+            <a href="/mindful-challenges/" class="card">
+                <div class="card-icon">🧘</div>
+                <h2>Mindful Challenges</h2>
+                <p>Take on daily wellness challenges</p>
+            </a>
+
+            <!-- Daily Wisdom Card -->
+            <a href="{% url 'wisdom' %}" class="card">
+                <div class="card-icon">✨</div>
+                <h2>Daily Wisdom</h2>
+                <p>Personalized wellness tips & suggestions</p>
+            </a>
+
+            <!-- Mood History Card -->
+            <a href="/history/" class="card">
+                <div class="card-icon">📅</div>
+                <h2>Mood History</h2>
+                <p>Review your past mood entries</p>
+            </a>
+
+            <!-- Wellness Analytics Card -->
+            <a href="{% url 'wellness_analytics' %}" class="card">
+                <div class="card-icon">🌸</div>
+                <h2>Wellness Analytics</h2>
+                <p>View your mood patterns & trends</p>
+            </a>
+
+            <!-- Personalized Playlist Card -->
+            <a href="/personalized-playlist/" class="card">
+                <div class="card-icon">🎵</div>
+                <h2>Personalized Playlist</h2>
+                <p>Music recommendations based on your mood</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

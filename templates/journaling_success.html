@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MoodMirror - Journal</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body class="auth-bg">
+
+<div class="journal-container">
+    <h2>📝 Journal Your Mood</h2>
+    <p>Reflect and track your feelings today 💜</p>
+
+    <!-- Mood Form -->
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.mood_type }}  <!-- Styled dropdown -->
+        {{ form.note }}       <!-- Styled textarea -->
+        <button type="submit" class="cta-btn">Save Mood</button>
+    </form>
+
+    <!-- LLM Suggestion -->
+    {% if llm_suggestion %}
+    <div class="suggestion-card">
+        <h3>💡 MoodMirror AI Suggestion</h3>
+        <p>{{ llm_suggestion }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Simple static suggestion fallback -->
+    {% if suggestion %}
+    <div class="suggestion-card">
+        <h3>{{ suggestion.title }}</h3>
+        <p>{{ suggestion.exercise }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Mood History -->
+    <div class="mood-history">
+        <h3>Your Previous Entries</h3>
+        <ul>
+            {% for entry in moods %}
+                <li>
+                    <span class="date">{{ entry.created_at|date:"M d, Y H:i" }}</span>
+                    <p>{{ entry.note }}</p>
+                </li>
+            {% empty %}
+                <li>No entries yet 💖</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>
